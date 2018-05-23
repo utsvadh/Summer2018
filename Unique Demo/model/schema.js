@@ -1,48 +1,42 @@
 var mongoose=require('mongoose');
-var bcrypt=require('bcrypt');
+var bcrypt=require('bcryptjs');
 var Schema=mongoose.Schema;
+var passportLocalMongoose=require('passport-local-mongoose');
 
 var LoginSchema=new Schema({
 	username:{
 		type: String,
-		unique: true,
-		required: true,
-		trim: true
+		index: true
 	},
 	password:{
 		type: String,
-		required: true
+		
 	},
 	passwordConf:{
 		type: String,
-		required: true
+		
 	}
 });
 
+//LoginSchema.plugin(passportLocalMongoose);
+/*
 //authentication 
-LoginSchema.statics.authenticate=function (password,callback){
-	Login.findOne({username: username})
-	.exec(function(err,login){
-		if(err){
-			return callback(err)
+LoginSchema.statics.authenticate = function(username, password, callback) {
+	this.findOne({ username: username }, function(error, user) {
+		if (login &amp;&amp; Hash.verify(password, login.password)) {
+			callback(null, user);
+		} else if (login || !error) {
+			// Email or password was invalid (no MongoDB error)
+			error = new Error("Your username or password is invalid. Please try again.");
+			callback(error, null);
+		} else {
+			// Something bad happened with MongoDB. You shouldn't run into this often.
+			callback(error, null);
 		}
-		else if(!login){
-			var err=new Error('User not found.');
-			err.status=401;
-			return callback(err);
-		}
-		 bcrypt.compare(password, user.password, function (err, result) {
-        if (result === true) {
-          return callback(null, user);
-        } else {
-          return callback();
-	}
-	})
-});
-}
+	});
+};
 
-
-
+*/
 //Hashing the password
 LoginSchema.pre('save', function (next) {
   var login = this;
@@ -65,3 +59,22 @@ LoginSchema.pre('save', function (next) {
 
 var Login=mongoose.model('logindetails',LoginSchema);
 module.exports=Login;
+
+module.exports.getUserByUsername = function(username,callback){
+	var query= {username: username};
+	Login.findOne(query,callback);
+}
+
+
+module.exports.getUserById = function(id,callback){
+	
+	Login.findById(id,callback);
+}
+
+
+module.exports.comparePassword=function(candidatePassword,hash,callback){
+	bcrypt.compare(candidatePassword,hash,function(err,isMatch){
+		if(err) throw err;
+		callback(null,isMatch);
+	});
+}

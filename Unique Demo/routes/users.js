@@ -3,6 +3,8 @@ var router=express.Router();
 var User=require('../models/schema');
 var passport=require('passport');
 var passportConfig=require('../config/passport-config');
+var expressValidator=require('express-validator');
+
 
 router.get('/register',function(req,res){
 	res.render('register');
@@ -26,10 +28,25 @@ router.post('/register',function(req,res){
 		username:req.body.username,
 		password:req.body.password
 	};
+req.checkBody('username','Name is required').notEmpty();
+req.checkBody('password','Password invalid').notEmpty();
+req.checkBody('password','Password length less than 4.').isLength({min:4});
+
+var errors=req.validationErrors();
+
+if(errors){
+	console.log('error');
+	res.render('register');
+}
+else{
+	console.log('Validation successfull.')
+
+	
 	User.create(userData).then(function(user){
 		//res.send('Successfully logged in.');
 		res.render('successRegister');
 	});
+};
 });
 
 router.post('/login',

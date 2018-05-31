@@ -8,7 +8,7 @@ var session=require('express-session');
 //var passportConfig=require('./config/passport-config');
 var bcrypt=require('bcryptjs');
 var cookieSession=require('cookie-session');
-
+var expressValidator=require('express-validator');
 
 //express app
 
@@ -23,6 +23,8 @@ mongoose.Promise=global.Promise;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+
+
 //passport initialization
 //app.use(session({secret:'random'}));
 
@@ -36,11 +38,35 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+//express Validator
+app.use(expressValidator({
+  errorFormatter: function(param, msg, value) {
+      var namespace = param.split('.')
+      , root    = namespace.shift()
+      , formParam = root;
+
+    while(namespace.length) {
+      formParam += '[' + namespace.shift() + ']';
+    }
+    return {
+      param : formParam,
+      msg   : msg,
+      value : value
+    };
+  }
+}));
+
 app.use('/',index);
 app.use('/users',users);
 
 //view engine
 app.set('view engine','ejs');
+
+//error handling
+
+app.use(function(err,req,res,next){
+	res.status(422).send({error:err.message});
+});
 
 
 

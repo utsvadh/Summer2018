@@ -1,9 +1,9 @@
-#Login Authentication
+# Login Authentication
 
 This is the login authentication using Node.js, Express , Passport and MongoDB.
 
 
-#About MongoDB
+# About MongoDB
 
 This app uses MongoDB as the database. The user details are stored in MongoDB. 
 
@@ -17,11 +17,11 @@ After that go to "C:\Program Files\MongoDB\Server\3.6\bin". Click on 'mongod' to
 
 Download: https://www.mongodb.com/download-center#community
 
-#About Passport
+# About Passport
 
 We use passport for the authentication. All the passport files are store in 'config' folder.
 
-#How to run?
+# How to run?
  Go to the console and start the app by command:
  		npm start
 
